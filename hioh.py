@@ -1,5 +1,7 @@
 from math import sqrt
+
 COLORS = {
+    # There's probably a better way to do this, but this works for now.
     "R": -1,
     "-": 0,
     "B": 1,
@@ -42,25 +44,32 @@ class Grid(object):
                 for i in range(2):
                     self.checkDupRows()
                     self.grid = transposeGrid(self.grid)
-                break
+            print(self)
     def checkDupRows(self):
         for i in range(self.size):
-            row = self.grid[i]
-            if sum(row) == 0 and not isRowSolved(row):
+            if self.grid[i].count(COLORS["-"]) == 2:
                 for j in range(self.size):
                     if i == j:
                         continue
-
+                    elif self.grid[j].count(COLORS["-"]) == 0:
+                        comparison = compareRows(self.grid[i], self.grid[j])
+                        self.grid[i] = comparison if comparison else self.grid[i]
     def __repr__(self):
         rstring = ""
         for row in self.grid:
             rstring += " ".join([COLORS[i] for i in row]) + "\n"
         return rstring
 
-def compareRows(r1, r2):
-    # r1 is solved
-    for i in len(r1):
-        pass
+def compareRows(incomplete, complete):
+    retrow = []
+    for i in range(len(incomplete)):
+        if incomplete[i] == -1 * complete[i]:
+            return False
+        elif incomplete[i] == COLORS["-"]:
+            retrow.append(-1 * complete[i])
+        else:
+            retrow.append(incomplete[i])
+    return retrow
 
 def isRowSolved(row):
     return COLORS['-'] not in row
@@ -102,11 +111,19 @@ def parseRow(row):
         return rcopy
     return parseRow(rcopy)
 
-def isRowSolved(row):
-    return sum(row) == 0 and COLORS['-'] not in row
-
 def main():
-    clist = "-RR---RBR-------"
+    # Currently the program is not identifying the cell at [5,5] as red
+    clist = "-R-R-R-R--"
+    clist += "--B-R--RR-"
+    clist += "-R---R--B-"
+    clist += "R---B---B-"
+    clist += "-B----B--R"
+    clist += "--R-------"
+    clist += "BR----R-BB"
+    clist += "--B-----B-"
+    clist += "R--R--B-R-"
+    clist += "-B---B---B"
+
     test = Grid(clist)
     test.solve()
 
