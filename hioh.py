@@ -2,12 +2,12 @@ from math import sqrt
 
 COLORS = {
     # There's probably a better way to do this, but this works for now.
-    "R": -1,
-    "-": 0,
-    "B": 1,
-    -1: "R",
-    0: "-",
-    1: "B"
+    'R': -1,
+    '-': 0,
+    'B': 1,
+    -1: 'R',
+    0: '-',
+    1: 'B'
 }
 
 class Grid(object):
@@ -30,34 +30,43 @@ class Grid(object):
                 return False
         return True
     def solve(self):
+        s = 0
         while not self.isSolved():
-            tempGrid = self.grid[:]
-            gridCopy = []
+            tempgrid = self.grid[:]
+            for i in range(2):
+                self.parseRows()
+                self.checkDupRows()
+                self.transposeGrid()
+            if self.grid == tempgrid:
+                print("Failed")
+                print(self)
+                break
+    def parseRows(self):
+        gridCopy = []
+        for row in self.grid:
+            gridCopy.append(parseRow(row))
+        self.grid = gridCopy[:]
+    def transposeGrid(self):
+        tGrid = []
+        for x in range(self.size):
+            tRow = []
             for row in self.grid:
-                gridCopy.append(parseRow(row))
-            self.grid = gridCopy[:]
-            tGrid = []
-            for row in transposeGrid(self.grid):
-                tGrid.append(parseRow(row))
-            self.grid = transposeGrid(tGrid)
-            if tempGrid == self.grid:
-                for i in range(2):
-                    self.checkDupRows()
-                    self.grid = transposeGrid(self.grid)
-            print(self)
+                tRow.append(row.pop(0))
+            tGrid.append(tRow)
+        self.grid = tGrid[:]
     def checkDupRows(self):
         for i in range(self.size):
-            if self.grid[i].count(COLORS["-"]) == 2:
+            if self.grid[i].count(COLORS['-']) == 2:
                 for j in range(self.size):
                     if i == j:
                         continue
-                    elif self.grid[j].count(COLORS["-"]) == 0:
+                    elif self.grid[j].count(COLORS['-']) == 0:
                         comparison = compareRows(self.grid[i], self.grid[j])
                         self.grid[i] = comparison if comparison else self.grid[i]
     def __repr__(self):
         rstring = ""
         for row in self.grid:
-            rstring += " ".join([COLORS[i] for i in row]) + "\n"
+            rstring += ' '.join([COLORS[i] for i in row]) + "\n"
         return rstring
 
 def compareRows(incomplete, complete):
@@ -65,7 +74,7 @@ def compareRows(incomplete, complete):
     for i in range(len(incomplete)):
         if incomplete[i] == -1 * complete[i]:
             return False
-        elif incomplete[i] == COLORS["-"]:
+        elif incomplete[i] == COLORS['-']:
             retrow.append(-1 * complete[i])
         else:
             retrow.append(incomplete[i])
@@ -101,11 +110,11 @@ def parseRow(row):
     elif rcopy.count(COLORS['B']) == len(row) // 2:
         return fillSolve(rcopy, COLORS['R'])
     for i in range(1, len(row) - 1):
-        if row[i - 1] == COLORS['-'] and row[i] == row[i + 1]:
+        if row[i - 1] == COLORS['-'] and row[i] == row[i + 1] != COLORS['-']:
             rcopy[i - 1] = -1 * row[i]
-        elif row[i + 1] == COLORS['-'] and row[i - 1] == row[i]:
+        elif row[i + 1] == COLORS['-'] and row[i - 1] == row[i] != COLORS['-']:
             rcopy[i + 1] = -1 * row[i]
-        elif row[i] == COLORS['-'] and row[i - 1] == row[i + 1]:
+        elif row[i] == COLORS['-'] and row[i - 1] == row[i + 1] != COLORS['-']:
             rcopy[i] = -1 * row[i - 1]
     if rcopy == row:
         return rcopy
@@ -125,7 +134,10 @@ def main():
     clist += "-B---B---B"
 
     test = Grid(clist)
+    print(test)
     test.solve()
+    print(test)
+
 
 if __name__ == '__main__':
     main()
