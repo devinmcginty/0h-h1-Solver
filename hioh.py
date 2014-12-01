@@ -1,4 +1,5 @@
 from math import sqrt
+from sys import argv
 # Rules:
 #   1. No more than 2 of a color in a row / column
 #   2. Equal number of color A and B in a row / column
@@ -6,9 +7,9 @@ from math import sqrt
 
 COLORS = {
     # There's probably a better way to do this, but this works for now.
-    'R': -1,
-    '-': 0,
-    'B': 1,
+    'R': -1,    # Red
+    '-': 0,     # Blank
+    'B': 1,     # Blue
     -1: 'R',
     0: '-',
     1: 'B'
@@ -16,6 +17,7 @@ COLORS = {
 
 class Grid(object):
     def __init__(self, clist):
+        # clist is the grid as a string of "R", "B", or "-"
         super(Grid, self).__init__()
         self.size = int(sqrt(len(clist)))
         self.clist = clist
@@ -142,7 +144,7 @@ def parseRow(row):
     # Recurse self until no more optimizations can be done
     return parseRow(rcopy)
 
-def main():
+def testCase():
     clist = "-R-R-R-R--"
     clist += "--B-R--RR-"
     clist += "-R---R--B-"
@@ -158,6 +160,15 @@ def main():
     print(test)
     test.solve()
     print(test)
+
+def main():
+    if len(argv) > 1:
+        inGrid = Grid(argv[1])
+        print(inGrid)
+        inGrid.solve()
+        print(inGrid)
+    else:
+        testCase()
 
 
 if __name__ == '__main__':
